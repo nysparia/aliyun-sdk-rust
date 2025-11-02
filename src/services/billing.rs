@@ -34,7 +34,7 @@ use std::collections::BTreeMap;
 /// | Data       | Object  | Account balance details                          |
 pub async fn query_account_balance(
     client: &AliyunClient,
-) -> Result<Value, Box<dyn std::error::Error>> {
+) -> Result<Value, reqwest::Error> {
     let mut params: BTreeMap<String, String> = BTreeMap::new();
     params.insert("Action".to_string(), "QueryAccountBalance".to_string());
     params.insert("Format".to_string(), "JSON".to_string());

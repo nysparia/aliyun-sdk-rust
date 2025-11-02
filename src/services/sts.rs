@@ -1,6 +1,6 @@
 use crate::client::AliyunClient;
 use serde_json::Value;
-use std::{collections::BTreeMap, error::Error};
+use std::collections::BTreeMap;
 
 /// Get Caller Identity - GetCallerIdentity
 ///
@@ -35,7 +35,7 @@ use std::{collections::BTreeMap, error::Error};
 /// | UserId      | String | The user ID                                                      |
 /// | Arn         | String | The ARN of the caller                                            |
 /// | RoleId      | String | The role id; returned only when the current caller is a RAM role |
-pub async fn get_caller_identity(client: &AliyunClient) -> Result<Value, Box<dyn Error>> {
+pub async fn get_caller_identity(client: &AliyunClient) -> Result<Value, reqwest::Error> {
     let mut params = BTreeMap::new();
     // todo: abstract `to_string`
     params.insert("Action".to_string(), "GetCallerIdentity".to_string());

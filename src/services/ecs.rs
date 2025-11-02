@@ -1,7 +1,6 @@
 use crate::client::AliyunClient;
 use serde_json::Value;
 use std::collections::BTreeMap;
-use std::error::Error;
 
 /// Describe Regions - 查询地域列表
 ///
@@ -26,7 +25,7 @@ use std::error::Error;
 pub async fn describe_regions(
     client: &AliyunClient,
     region_id: Option<&str>,
-) -> Result<Value, Box<dyn Error>> {
+) -> Result<Value, reqwest::Error> {
     let mut params = BTreeMap::new();
     params.insert("Action".to_string(), "DescribeRegions".to_string());
     params.insert("Format".to_string(), "JSON".to_string());
@@ -60,7 +59,7 @@ pub async fn describe_regions(
 pub async fn describe_zones(
     client: &AliyunClient,
     region_id: &str,
-) -> Result<Value, Box<dyn Error>> {
+) -> Result<Value, reqwest::Error> {
     let mut params = BTreeMap::new();
     params.insert("Action".to_string(), "DescribeZones".to_string());
     params.insert("Format".to_string(), "JSON".to_string());
@@ -94,7 +93,7 @@ pub async fn describe_available_resource(
     client: &AliyunClient,
     region_id: &str,
     zone_id: &str,
-) -> Result<Value, Box<dyn Error>> {
+) -> Result<Value, reqwest::Error> {
     let mut params = BTreeMap::new();
     params.insert(
         "Action".to_string(),
@@ -126,7 +125,7 @@ pub async fn describe_available_resource(
 /// |----------------------|---------|----------------------------|
 /// | AccountAttributes    | Object  | ECS resource quota details |
 /// | RequestId            | String  | Unique request ID          |
-pub async fn describe_account_attributes(client: &AliyunClient) -> Result<Value, Box<dyn Error>> {
+pub async fn describe_account_attributes(client: &AliyunClient) -> Result<Value, reqwest::Error> {
     let mut params = BTreeMap::new();
     params.insert(
         "Action".to_string(),
@@ -162,7 +161,7 @@ pub async fn describe_resources_modification(
     client: &AliyunClient,
     region_id: &str,
     zone_id: &str,
-) -> Result<Value, Box<dyn Error>> {
+) -> Result<Value, reqwest::Error> {
     let mut params = BTreeMap::new();
     params.insert(
         "Action".to_string(),
@@ -198,7 +197,7 @@ pub async fn describe_resources_modification(
 pub async fn describe_recommend_instance_type(
     client: &AliyunClient,
     region_id: &str,
-) -> Result<Value, Box<dyn Error>> {
+) -> Result<Value, reqwest::Error> {
     let mut params = BTreeMap::new();
     params.insert(
         "Action".to_string(),
@@ -238,7 +237,7 @@ pub async fn run_instances(
     region_id: &str,
     image_id: &str,
     instance_type: &str,
-) -> Result<Value, Box<dyn Error>> {
+) -> Result<Value, reqwest::Error> {
     let mut params = BTreeMap::new();
     params.insert("Action".to_string(), "RunInstances".to_string());
     params.insert("Format".to_string(), "JSON".to_string());
@@ -272,7 +271,7 @@ pub async fn run_instances(
 pub async fn start_instances(
     client: &AliyunClient,
     instance_ids: Vec<&str>,
-) -> Result<Value, Box<dyn Error>> {
+) -> Result<Value, reqwest::Error> {
     let mut params = BTreeMap::new();
     params.insert("Action".to_string(), "StartInstances".to_string());
     params.insert("Format".to_string(), "JSON".to_string());
@@ -315,7 +314,7 @@ pub async fn stop_instances(
     instance_ids: Vec<&str>,
     force_stop: Option<bool>,
     dry_run: Option<bool>,
-) -> Result<Value, Box<dyn Error>> {
+) -> Result<Value, reqwest::Error> {
     let mut params = BTreeMap::new();
     params.insert("Action".to_string(), "StopInstances".to_string());
     params.insert("Format".to_string(), "JSON".to_string());
@@ -365,7 +364,7 @@ pub async fn reboot_instance(
     instance_id: &str,
     force_stop: Option<bool>,
     dry_run: Option<bool>,
-) -> Result<Value, Box<dyn Error>> {
+) -> Result<Value, reqwest::Error> {
     let mut params = BTreeMap::new();
     params.insert("Action".to_string(), "RebootInstance".to_string());
     params.insert("Format".to_string(), "JSON".to_string());
@@ -402,7 +401,7 @@ pub async fn reboot_instance(
 pub async fn delete_instance(
     client: &AliyunClient,
     instance_id: &str,
-) -> Result<Value, Box<dyn Error>> {
+) -> Result<Value, reqwest::Error> {
     let mut params = BTreeMap::new();
     params.insert("Action".to_string(), "DeleteInstance".to_string());
     params.insert("Format".to_string(), "JSON".to_string());
@@ -440,7 +439,7 @@ pub async fn describe_instance_status(
     instance_id: Option<&str>,
     page_number: Option<u32>,
     page_size: Option<u32>,
-) -> Result<Value, Box<dyn Error>> {
+) -> Result<Value, reqwest::Error> {
     let mut params = BTreeMap::new();
     params.insert("Action".to_string(), "DescribeInstanceStatus".to_string());
     params.insert("Format".to_string(), "JSON".to_string());
@@ -488,7 +487,7 @@ pub async fn describe_instances(
     filters: Option<&str>,
     page_number: Option<u32>,
     page_size: Option<u32>,
-) -> Result<Value, Box<dyn Error>> {
+) -> Result<Value, reqwest::Error> {
     let mut params = BTreeMap::new();
     params.insert("Action".to_string(), "DescribeInstances".to_string());
     params.insert("Format".to_string(), "JSON".to_string());

@@ -41,7 +41,7 @@ impl AliyunClient {
         &self,
         endpoint: &str,
         mut params: BTreeMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error>> {
+    ) -> Result<Value, reqwest::Error> {
         // Insert common parameters
         params
             .entry("AccessKeyId".to_string())
