@@ -9,6 +9,7 @@ use serde_json::Value;
 use std::collections::BTreeMap;
 use uuid::Uuid;
 
+#[derive(Debug, Clone)]
 /// The AliyunClient struct holds credentials and provides methods to send requests.
 pub struct AliyunClient {
     pub access_key_id: String,
