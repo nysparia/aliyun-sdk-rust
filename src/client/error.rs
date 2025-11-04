@@ -1,3 +1,5 @@
+use std::{error, fmt::Debug};
+
 use serde::{Deserialize, Serialize};
 use serde_with::{serde_as, DisplayFromStr};
 use thiserror::Error;
@@ -24,11 +26,45 @@ pub struct AliyunRejection {
 
 #[serde_as]
 #[derive(Serialize, Error, Debug)]
-pub enum AdvancedClientError {
+pub enum OperationError {
     #[error("Aliyun rejected the request and returned an error")]
-    AliyunRejectError(AliyunRejection),
-    #[error("When using the underlying client to send request it throw an error: {0}")]
-    UnderlyingError(#[from] #[serde_as(as = "DisplayFromStr")] reqwest::Error),
-    #[error("When trying to deserialization the result an error occurred. This should not happened; please using services to debug and open a bug issue")]
-    ResultDeserializationError(#[from] #[serde_as(as = "DisplayFromStr")] serde_json::Error),
+    Rejected(AliyunRejection),
+
+    #[error("{}", .message)]
+    RequestFailure {
+        message: String,
+        #[serde(skip)]
+        source: reqwest::Error,
+    },
+
+    #[error("{}", .message)]
+    InternalError {
+        message: String,
+        #[serde(skip)]
+        source: Box<dyn std::error::Error>,
+    },
+}
+
+impl From<reqwest::Error> for OperationError {
+    fn from(source: reqwest::Error) -> Self {
+        let message = format!("(reqwest) {:?}", source);
+        if source.is_timeout() || source.is_connect() || source.is_status() {
+            Self::RequestFailure { message, source }
+        } else {
+            Self::InternalError {
+                message,
+                source: Box::new(source),
+            }
+        }
+    }
+}
+
+impl From<serde_json::Error> for OperationError {
+    fn from(value: serde_json::Error) -> Self {
+        let message = format!("(json (de)serialization error) {:?}", value);
+        Self::InternalError {
+            message,
+            source: Box::new(value),
+        }
+    }
 }

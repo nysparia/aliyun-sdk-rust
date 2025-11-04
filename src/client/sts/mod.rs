@@ -2,7 +2,7 @@ pub mod caller_identity;
 
 use crate::{
     client::{
-        error::AdvancedClientError, sts::caller_identity::CallerIdentityBody,
+        error::OperationError, sts::caller_identity::CallerIdentityBody,
         utils::parse_json_value, AliyunClient,
     },
     services::sts::get_caller_identity,
@@ -29,7 +29,7 @@ impl<'a> STSClient<'a> {
     ///
     /// Errors from the HTTP client or JSON deserialization are propagated as
     /// `AdvancedClientError`.
-    pub async fn get_caller_identity(&self) -> Result<CallerIdentityBody, AdvancedClientError> {
+    pub async fn get_caller_identity(&self) -> Result<CallerIdentityBody, OperationError> {
         let response = get_caller_identity(&self.client).await?;
         let parsed = parse_json_value::<CallerIdentityBody>(response)?;
         Result::Ok(parsed)
@@ -52,7 +52,7 @@ mod tests {
     use claims::assert_matches;
 
     use crate::{
-        client::error::AdvancedClientError,
+        client::error::OperationError,
         test_multiple_clients,
         test_utils::{create_aliyun_client, EMPTY, GLOBAL_TEST_SECRETS, INVALID},
     };
@@ -77,7 +77,7 @@ mod tests {
             |client, name| async {
                 let result = client.sts().get_caller_identity().await;
                 println!("{} Result: {:#?}", name, result);
-                assert_matches!(result, Err(AdvancedClientError::AliyunRejectError(_)));
+                assert_matches!(result, Err(OperationError::Rejected(_)));
             }
         }
     }
