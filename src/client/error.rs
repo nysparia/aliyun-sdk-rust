@@ -1,7 +1,6 @@
-use std::{error, fmt::Debug};
+use std::fmt::Debug;
 
 use serde::{Deserialize, Serialize};
-use serde_with::{serde_as, DisplayFromStr};
 use thiserror::Error;
 
 fn default_aliyun_rejection_field() -> String {
@@ -24,7 +23,12 @@ pub struct AliyunRejection {
     pub recommend: String,
 }
 
-#[serde_as]
+#[derive(Serialize, Debug)]
+pub enum RequestErrorKind {
+    Timeout,
+    Connect,
+}
+
 #[derive(Serialize, Error, Debug)]
 pub enum OperationError {
     #[error("Aliyun rejected the request and returned an error")]
@@ -33,6 +37,7 @@ pub enum OperationError {
     #[error("{}", .message)]
     RequestFailure {
         message: String,
+        kind: RequestErrorKind,
         #[serde(skip)]
         source: reqwest::Error,
     },
@@ -48,8 +53,20 @@ pub enum OperationError {
 impl From<reqwest::Error> for OperationError {
     fn from(source: reqwest::Error) -> Self {
         let message = format!("(reqwest) {:?}", source);
-        if source.is_timeout() || source.is_connect() || source.is_status() {
-            Self::RequestFailure { message, source }
+        let request_error_kind = if source.is_timeout() {
+            Some(RequestErrorKind::Timeout)
+        } else if source.is_connect() {
+            Some(RequestErrorKind::Connect)
+        } else {
+            None
+        };
+
+        if let Some(kind) = request_error_kind {
+            Self::RequestFailure {
+                message,
+                kind,
+                source,
+            }
         } else {
             Self::InternalError {
                 message,
